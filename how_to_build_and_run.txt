@@ -1,0 +1,2 @@
+to build: in the terminal type "mingw32-make"
+to run: ./main
