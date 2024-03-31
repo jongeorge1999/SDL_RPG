@@ -1,0 +1,4 @@
+to build on windows: in the terminal of vscode type "mingw32-make windows" (or do ./test.bat from build directory)
+to build on linux: in terminal type "make linux"
+to run on windows: ./main_windows
+to run on linux: ./main_linux
