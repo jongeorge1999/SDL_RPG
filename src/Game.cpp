@@ -15,6 +15,8 @@ std::vector<ColliderComponent*> Game::colliders;
 auto& wall(manager.addEntity());
 auto& player(manager.addEntity());
 
+const char* mapfile = "../assets/terrain_ss.png";
+
 enum groupLabels : std::size_t {
     groupMap,
     groupPlayers,
@@ -43,18 +45,18 @@ void Game::init(const char* title, int x, int y, int width, int height, bool ful
     }
     map = new Map();
 
-    Map::LoadMap("../assets/16x16.map", 16,16);
+    Map::LoadMap("../assets/map.map", 25,20);
 
-    player.addComponent<TransformComponent>(2);
-    player.addComponent<SpriteComponent>("../assets/anim_newPlayer.png", 4, 500);
+    player.addComponent<TransformComponent>(1);
+    player.addComponent<SpriteComponent>("../assets/Player_NewAnims.png", true);
     player.addComponent<KeyBoardController>();
     player.addComponent<ColliderComponent>("player");
     player.addGroup(groupPlayers);
 
-    wall.addComponent<TransformComponent>(400.0f, 400.0f, 20, 300, 1);
-    wall.addComponent<SpriteComponent>("../assets/dirt.png");
-    wall.addComponent<ColliderComponent>("wall");
-    wall.addGroup(groupMap);
+    //wall.addComponent<TransformComponent>(400.0f, 400.0f, 20, 300, 1);
+    //wall.addComponent<SpriteComponent>("../assets/dirt.png");
+    //wall.addComponent<ColliderComponent>("wall");
+    //wall.addGroup(groupMap);
 }
 
 void Game::handleEvents(){
@@ -104,9 +106,9 @@ void Game::clean(){
     std::cout << "Game exited" << std::endl;
 }
 
-void Game::AddTile(int id, int x, int y) {
+void Game::AddTile(int srcX, int srcY, int xpos, int ypos) {
     auto& tile(manager.addEntity());
-    tile.addComponent<TileComponent>(x, y, 32, 32, id);
+    tile.addComponent<TileComponent>(srcX, srcY, xpos, ypos, mapfile);
     tile.addGroup(groupMap);
 }
 

@@ -2,6 +2,8 @@
 #include "Components.hpp"
 #include "SDL2/SDL.h"
 #include "../TextureManager.hpp"
+#include "Animation.hpp"
+#include <map>
 
 class SpriteComponent : public Component {
     private:
@@ -14,15 +16,32 @@ class SpriteComponent : public Component {
         int speed = 100;
 
     public:
+
+        int animIndex = 0;
+
+        std::map<const char*, Animation> animations;
+
+        SDL_RendererFlip spriteFlip = SDL_FLIP_NONE;
+
         SpriteComponent() = default;
         SpriteComponent(const char* path){
             setTex(path);
         }
 
-        SpriteComponent(const char* path, int numFrames, int mSpeed){
-            animated = true;
-            frames = numFrames;
-            speed = mSpeed;
+        SpriteComponent(const char* path, bool isAnimated){
+            animated = isAnimated;
+
+            Animation idle = Animation(0, 4, 300);
+            Animation walkLR = Animation(1, 4, 300);
+            Animation walkD = Animation(2, 4, 300);
+            Animation walkU = Animation(3, 4, 300);
+
+            animations.emplace("Idle", idle);
+            animations.emplace("WalkLR", walkLR);
+            animations.emplace("WalkD", walkD);
+            animations.emplace("WalkU", walkU);
+
+            Play("Idle");
             setTex(path);
         }
 
@@ -47,8 +66,10 @@ class SpriteComponent : public Component {
         void update() override {
 
             if(animated) {
-                srcRect.y = srcRect.h * static_cast<int>((SDL_GetTicks() / speed) % frames);
+                srcRect.x = srcRect.w * static_cast<int>((SDL_GetTicks() / speed) % frames);
             }
+
+            srcRect.y = animIndex * transform->height;
 
             destRect.x = static_cast<int>(transform->position.x);
             destRect.y = static_cast<int>(transform->position.y);
@@ -57,6 +78,12 @@ class SpriteComponent : public Component {
         }
 
         void draw() override {
-            TextureManager::Draw(texture, srcRect, destRect);
+            TextureManager::Draw(texture, srcRect, destRect, spriteFlip);
+        }
+
+        void Play(const char* animName) {
+            frames = animations[animName].frames;
+            animIndex = animations[animName].index;
+            speed = animations[animName].speed;
         }
 };
