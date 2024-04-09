@@ -10,7 +10,11 @@ Manager manager;
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 
+SDL_Rect Game::camera = {0,0, 1600, 1280};
+
 std::vector<ColliderComponent*> Game::colliders;
+
+bool Game::isRunning = false;
 
 auto& wall(manager.addEntity());
 auto& player(manager.addEntity());
@@ -23,6 +27,10 @@ enum groupLabels : std::size_t {
     groupEnemies,
     groupColliders
 };
+
+auto& tiles(manager.getGroup(groupMap));
+auto& players(manager.getGroup(groupPlayers));
+auto& enemies(manager.getGroup(groupEnemies));
 
 Game::Game(){}
 Game::~Game(){}
@@ -76,14 +84,21 @@ void Game::update(){
     manager.refresh();
     manager.update();
 
-    for(auto cc : colliders) {
-        Collision::AABB(player.getComponent<ColliderComponent>(), *cc);
-    }
-}
+    Vector2D playerVelocity = player.getComponent<TransformComponent>().velocity;
+    int playerSpeed = player.getComponent<TransformComponent>().speed;
 
-auto& tiles(manager.getGroup(groupMap));
-auto& players(manager.getGroup(groupPlayers));
-auto& enemies(manager.getGroup(groupEnemies));
+    //for(auto cc : colliders) {
+        //Collision::AABB(player.getComponent<ColliderComponent>(), *cc);
+    //}
+
+    camera.x = player.getComponent<TransformComponent>().position.x - 800;
+    camera.y = player.getComponent<TransformComponent>().position.y - 640;
+
+    if(camera.x < 0) {camera.x = 0;} 
+    if(camera.y < 0) {camera.y = 0;}
+    if(camera.x > camera.w) {camera.x = camera.w;}
+    if(camera.y > camera.h) {camera.y = camera.h;}
+}
 
 void Game::render(){
     SDL_RenderClear(renderer);

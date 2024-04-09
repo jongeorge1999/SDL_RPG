@@ -24,8 +24,10 @@ class Game {
         static SDL_Event event;
         static std::vector<ColliderComponent*> colliders;
 
+        static bool isRunning;
+        static SDL_Rect camera;
     private:
-        int count;
-        bool isRunning;
+        int count = 0;
+
         SDL_Window *window;
 };
